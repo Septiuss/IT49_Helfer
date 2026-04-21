@@ -74,10 +74,10 @@ https://github.com/Septiuss/it49_helfer/releases/latest/download/IT49.exe
 
 ## Wichtige Anpassungen
 
-In `app.bat`:
+In `DEV_IT49_Helfer`:
 - `REPO_OWNER=Septiuss`
 - `REPO_NAME=it49`
-- `CURRENT_VERSION=1.0`
+- `CURRENT_VERSION=1.0.0 (Immer ändern)`
 
 In `version.json`:
 - `version`
