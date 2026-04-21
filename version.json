@@ -1,0 +1,14 @@
+{
+  "app_name": "IT49_Helfer",
+  "channel": "stable",
+  "version": "1.0.1",
+  "asset_name": "IT49_Helfer.exe",
+  "download_url": "https://github.com/Septiuss/it49_helfer/releases/latest/download/IT49_Helfer.exe",
+  "release_title": "IT49 1.0",
+  "published_at": "2026-04-21",
+  "changelog": [
+    "Neuer Update-Dialog mit Rueckfrage vor der Installation.",
+    "Changelog wird vor dem Update angezeigt.",
+    "Stabilere Ersetzung der EXE nach dem Download."
+  ]
+}
