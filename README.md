@@ -6,7 +6,7 @@ Dieses Paket ist ein Grundgeruest fuer ein Windows-Tool mit Auto-Update ueber Gi
 
 ```text
 IT49_helfer/
-├── IT49.exe
+├── IT49_Helfer.exe
 ├── app.bat
 ├── updater.ps1
 ```
@@ -21,7 +21,7 @@ it49_helfer/
 
 Die EXE selbst laedst du als **GitHub Release Asset** hoch:
 - Release Tag z. B. `v1.0`
-- Asset Name genau: `IT49+ Helfer.exe`
+- Asset Name genau: `IT49_Helfer.exe`
 
 Dann lautet der Download-Link stabil:
 
@@ -45,12 +45,12 @@ https://github.com/Septiuss/it49_helfer/releases/latest/download/IT49.exe
 
 ```json
 {
-  "app_name": "IT49+ Helfer",
+  "app_name": "IT49_Helfer",
   "channel": "stable",
   "version": "1.0",
-  "asset_name": "IT49+ Helfer.exe",
-  "download_url": "https://github.com/DEIN_GITHUB_NAME/it49/releases/latest/download/IT49.exe",
-  "release_title": "IT49+ Helfer 1.0",
+  "asset_name": "IT49_Helfer.exe",
+  "download_url": "https://github.com/Septiusss/it49/releases/latest/download/IT49.exe",
+  "release_title": "IT49_Helfer 1.0",
   "published_at": "2026-04-21",
   "changelog": [
     "Neuer Punkt 1",
@@ -62,9 +62,9 @@ https://github.com/Septiuss/it49_helfer/releases/latest/download/IT49.exe
 
 ## Bei jedem neuen Release
 
-1. Neue `IT49+ Helfer.exe` bauen
+1. Neue `IT49_Helfer.exe` bauen
 2. Neues GitHub Release erstellen
-3. `IT49+ Helfer.exe` als Asset hochladen
+3. `IT49_Helfer.exe` als Asset hochladen
 4. `version.json` anpassen:
    - `version`
    - `release_title`
