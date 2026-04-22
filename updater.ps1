@@ -34,20 +34,20 @@ function Compare-Version([string]$a, [string]$b) {
 function Show-Changelog($meta) {
     Write-Host ""
     Write-Host "=============================================="
-    Write-Host " Update verfuegbar: $($meta.version)"
-    Write-Host " Aktuelle Version: $CurrentVersion"
+    Write-Host " Update Version: $([char]27)[1;93m$($meta.version)$([char]27)[0m"
+    Write-Host " Aktuelle Version: $([char]27)[1;92m$CurrentVersion$([char]27)[0m"
     Write-Host "=============================================="
 
     if ($meta.release_title) {
-        Write-Host "Titel: $($meta.release_title)"
+        Write-Host "Titel: $([char]27)[97m$($meta.release_title)$([char]27)[0m"
     }
 
     if ($meta.published_at) {
-        Write-Host "Veroeffentlicht: $($meta.published_at)"
+        Write-Host "Veroeffentlicht: $([char]27)[4;97m$($meta.published_at)$([char]27)[0m"
     }
 
     Write-Host ""
-    Write-Host "Changelog:"
+    Write-Host "$([char]27)[1;96mChangelog:$([char]27)[0m"
 
     $hasLines = $false
 
@@ -90,7 +90,6 @@ $tempDir = Join-Path $env:TEMP "IT49_Update"
 New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
 
 $versionUrl = "https://raw.githubusercontent.com/$RepoOwner/$RepoName/main/version.json"
-Write-Info "Lade Versionsdatei: $versionUrl"
 
 try {
     $meta = Invoke-RestMethod -Uri $versionUrl -UseBasicParsing
@@ -113,9 +112,9 @@ if (-not $latestVersion -or -not $downloadUrl -or -not $assetName) {
     exit 1
 }
 
-$cmp = Compare-Version $latestVersion $currentVersion
-if ($cmp -le 0) {
-    Write-Info "Keine neuere Version gefunden. Installiert: $currentVersion"
+if ((Compare-Version $latestVersion $currentVersion) -le 0) {
+    Write-Info "$([char]27)[1;97mKeine neuere Version gefunden.$([char]27)[0m Installiert: $([char]27)[1;32m$CurrentVersion$([char]27)[0m"
+    Write-Info "$([char]27)[1;97mDu bist auf dem aktuellsten Stand.$([char]27)[0m"
     exit 0
 }
 
@@ -125,42 +124,38 @@ if ($Mode -eq "CheckOnly") {
     exit 0
 }
 
-if ($latestVersion -eq $CurrentVersion) {
-    Write-Info "Keine neuere Version gefunden. Installiert: $CurrentVersion"
-    exit 0
-}
-
 if ($Mode -eq "Prompt") {
-    $choice = Read-Host "Update jetzt herunterladen und installieren? (J/N)"
-    if ($choice.ToLower() -ne "j") {
-        Write-Info "Update abgebrochen."
+    $choice = Read-Host "$([char]27)[1;97mUpdate jetzt herunterladen und installieren?$([char]27)[0m ($([char]27)[32mJ$([char]27)[0m/$([char]27)[31mN$([char]27)[0m)"
+    if ($choice -notmatch '^(J|j|Y|y)$') {
+        Write-Info "$([char]27)[31mUpdate abgebrochen.$([char]27)[0m"
         exit 0
     }
-
-    Clear-Host
-    Write-Host ""
-    Write-Host "Information zum Update: Bitte Enter druecken" -ForegroundColor Red
-    Read-Host
-
-    Clear-Host
-    Write-Host "Information zum Update:" -ForegroundColor Red
-    Write-Host ""
-    Write-Host "===============================================================" -ForegroundColor Cyan
-    Write-Host "Falls das Script geupdated wird, bitte hier warten."
-    Write-Host "Sobald das Update fertig ist, oeffnet sich ein neues Fenster"
-    Write-Host "und dieses kann geschlossen werden."
-    Write-Host "===============================================================" -ForegroundColor Cyan
-    Write-Host ""
-    Write-Host ""
-    Write-Host 'Steht oben "Keine neuere Version gefunden. Installiert: x.x.x"'
-    Write-Host 'einfach "Enter" druecken und fortfahren.'
-    Write-Host ""
-    Read-Host
 }
 
 $downloadTarget = Join-Path $tempDir $assetName
-Write-Info "Lade neue Version herunter..."
-Invoke-WebRequest -Uri $downloadUrl -OutFile $downloadTarget -UseBasicParsing
+Clear-Host
+Write-Host ""
+Write-Host ""
+Write-Host ""
+Write-Host ""
+Write-Host ""
+Write-Host ""
+Write-Host ""
+Write-Info "$([char]27)[1;6;91mLade neue Version herunter...$([char]27)[0m"
+
+try {
+    Invoke-WebRequest -Uri $downloadUrl -OutFile $downloadTarget -UseBasicParsing -ErrorAction Stop
+} catch {
+    Write-WarnMsg "Invoke-WebRequest fehlgeschlagen - versuche Fallback..."
+    try {
+        $wc = New-Object System.Net.WebClient
+        $wc.DownloadFile($downloadUrl, $downloadTarget)
+        $wc.Dispose()
+    } catch {
+        Write-WarnMsg "Download fehlgeschlagen. $($_.Exception.Message)"
+        exit 1
+    }
+}
 
 if (-not (Test-Path $downloadTarget)) {
     Write-WarnMsg "Download fehlgeschlagen."
@@ -195,5 +190,24 @@ Set-Content -Path $replaceScript -Value $replaceContent -Encoding ASCII
 
 Write-Info "Starte Ersetzungsskript..."
 Start-Process -FilePath "cmd.exe" -ArgumentList "/c","$replaceScript" -WindowStyle Hidden
+
 Write-Info "Updater beendet sich jetzt."
-exit 0
+Write-Host ""
+Clear-Host
+Write-Host "===============================================================" -ForegroundColor Cyan
+Write-Host "Das Update wurde erfolgreich installiert."
+Write-Host ""
+Write-Host "$([char]27)[1;6;92mDas Programm wird automatisch neugestartet$([char]27)[0m"
+Write-Host ""
+Write-Host "Dieses Fenster schliesst sich automatisch."
+Write-Host ""
+Write-Host "===============================================================" -ForegroundColor Cyan
+Write-Host ""
+
+$seconds = 10
+for ($i = $seconds; $i -gt 0; $i--) {
+    Write-Host -NoNewline "`rFenster schliesst in $i Sekunden...   " -ForegroundColor Yellow
+    Start-Sleep -Seconds 1
+}
+
+[Environment]::Exit(99)
